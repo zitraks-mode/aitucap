@@ -24,7 +24,7 @@ CORS(app)
 app.config['SECRET_KEY'] = 'health-ai-scanner-secret-key-2024'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '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')
 openai.api_key = OPENAI_API_KEY
 
 print("=" * 50)
@@ -47,10 +47,10 @@ def load_model_safe(model_path):
             print(f"  ✗ Ошибка: {str(e)[:80]}")
             return None
 
-acne_model = load_model_safe('models/acne_model.h5')
-eyes_model = load_model_safe('models/eyes_model.h5')
-nails_model = load_model_safe('models/nails_model.h5')
-xray_model = load_model_safe('models/xray_model.h5')
+acne_model = load_model_safe('acne_model.h5')
+eyes_model = load_model_safe('eyes_model.h5')
+nails_model = load_model_safe('nails_model.h5')
+xray_model = load_model_safe('xray_model.h5')
 
 loaded_count = sum([1 for m in [acne_model, eyes_model, nails_model, xray_model] if m is not None])
 if loaded_count == 4:
@@ -1181,21 +1181,15 @@ def generate_detailed_pdf(analysis):
     )
 
 if __name__ == '__main__':
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    
     print("\n" + "="*60)
     print("HEALTH AI SCANNER - ЗАПУСК СЕРВЕРА")
     print("="*60)
-    print("Сервер запущен на: http://localhost:5000")
-    print("Доступ из сети: http://0.0.0.0:5000")
+    print(f"Сервер запущен на порту: {port}")
     print("="*60)
-    print("\n ДОСТУПНЫЕ API ENDPOINTS:")
-    print("POST /api/analyze - Анализ изображения")
-    print("GET  /api/history - История анализов")
-    print("GET  /api/diseases - Библиотека заболеваний")
-    print("GET  /api/hospitals - Больницы Казахстана")
-    print("POST /api/chat - AI консультант")
-    print("POST /api/generate-pdf - Генерация PDF отчета")
-    print("="*60)
-    print("Нажмите Ctrl+C для остановки сервера\n")
     
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+    app.run(debug=debug_mode, port=port, host='0.0.0.0')
         
