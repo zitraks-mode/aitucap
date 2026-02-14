@@ -1,0 +1,27 @@
+<div class="card" style="max-width: 600px; margin: 5rem auto;">
+    <div class="card-header">
+        <h2><i class="fas fa-map-marker-alt"></i> Выберите ваш город</h2>
+    </div>
+    
+    <p style="color: var(--text-medium); margin-bottom: 2rem;">
+        Это поможет нам найти ближайшие медицинские учреждения
+    </p>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label">Город проживания:</label>
+            <select name="city" class="form-control" required>
+                <option value="">-- Выберите город --</option>
+                {% for city in cities %}
+                <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary" style="padding: 1rem 3rem;">
+                <i class="fas fa-check"></i> Продолжить
+            </button>
+        </div>
+    </form>
+</div>

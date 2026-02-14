@@ -1,0 +1,1251 @@
+{% extends "base.html" %}
+
+{% block title %}Health AI Scanner - Библиотека заболеваний{% endblock %}
+
+{% block content %}
+<div class="library-page">
+    <div class="container">
+        <!-- Заголовок и поиск -->
+        <div class="library-header">
+            <h1 class="section-title">
+                <i class="fas fa-book-medical"></i> Библиотека заболеваний
+            </h1>
+            <p class="page-subtitle">
+                База медицинских знаний с описанием заболеваний, симптомов, причин и методов лечения
+            </p>
+            
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Поиск по названию заболевания..." 
+                           onkeyup="searchDiseases()">
+                    <button class="search-clear" onclick="clearSearch()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="search-stats">
+                    <span id="diseaseCount">{{ diseases|length }} заболеваний</span>
+                    <span class="divider">•</span>
+                    <span>Обновлено сегодня</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filters-section">
+            <div class="filter-header">
+                <h3><i class="fas fa-filter"></i> Фильтровать по категориям</h3>
+                <button class="btn btn-small" onclick="resetFilters()">
+                    <i class="fas fa-redo"></i> Сбросить все
+                </button>
+            </div>
+            
+            <div class="filters-grid">
+                <button class="filter-btn active" data-category="all" onclick="filterByCategory('all')">
+                    <i class="fas fa-layer-group"></i> Все категории
+                </button>
+                <button class="filter-btn" data-category="skin" onclick="filterByCategory('Кожа')">
+                    <i class="fas fa-skin"></i> Кожа
+                </button>
+                <button class="filter-btn" data-category="eyes" onclick="filterByCategory('Глаза')">
+                    <i class="fas fa-eye"></i> Глаза
+                </button>
+                <button class="filter-btn" data-category="nails" onclick="filterByCategory('Ногти')">
+                    <i class="fas fa-hand-paper"></i> Ногти
+                </button>
+                <button class="filter-btn" data-category="lungs" onclick="filterByCategory('Легкие')">
+                    <i class="fas fa-lungs"></i> Легкие
+                </button>
+                <button class="filter-btn" data-category="heart" onclick="filterByCategory('Сердце')">
+                    <i class="fas fa-heart"></i> Сердце
+                </button>
+                <button class="filter-btn" data-category="bones" onclick="filterByCategory('Кости')">
+                    <i class="fas fa-bone"></i> Кости
+                </button>
+                <button class="filter-btn" data-category="common" onclick="filterByCategory('common')">
+                    <i class="fas fa-star"></i> Распространенные
+                </button>
+                <button class="filter-btn" data-category="urgent" onclick="filterByCategory('urgent')">
+                    <i class="fas fa-exclamation-triangle"></i> Срочные
+                </button>
+            </div>
+            
+            <div class="advanced-filters">
+                <details>
+                    <summary>
+                        <i class="fas fa-sliders-h"></i> Дополнительные фильтры
+                    </summary>
+                    <div class="advanced-filters-content">
+                        <div class="filter-group">
+                            <label>Серьезность:</label>
+                            <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="filterLow" checked>
+                                    <span class="severity low">Низкая</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="filterMedium" checked>
+                                    <span class="severity medium">Средняя</span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="filterHigh" checked>
+                                    <span class="severity high">Высокая</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Возрастная группа:</label>
+                            <select id="ageGroup" onchange="applyFilters()">
+                                <option value="all">Все возраста</option>
+                                <option value="children">Дети</option>
+                                <option value="adults">Взрослые</option>
+                                <option value="elderly">Пожилые</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Сезонность:</label>
+                            <select id="seasonality" onchange="applyFilters()">
+                                <option value="all">Любой сезон</option>
+                                <option value="winter">Зима</option>
+                                <option value="spring">Весна</option>
+                                <option value="summer">Лето</option>
+                                <option value="autumn">Осень</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Список заболеваний -->
+        <div class="diseases-grid" id="diseasesGrid">
+            {% for name, data in diseases.items() %}
+            <div class="disease-card" data-category="{{ data.category|lower }}" data-severity="{{ data.severity|default('medium') }}">
+                <div class="disease-card-header">
+                    <div class="disease-category {{ data.category|lower }}">
+                        <i class="fas 
+                            {% if data.category == 'Кожа' %}fa-skin
+                            {% elif data.category == 'Глаза' %}fa-eye
+                            {% elif data.category == 'Ногти' %}fa-hand-paper
+                            {% elif data.category == 'Легкие' %}fa-lungs
+                            {% elif data.category == 'Сердце' %}fa-heart
+                            {% else %}fa-bone{% endif %}"></i>
+                        {{ data.category }}
+                    </div>
+                    <span class="disease-severity {{ data.severity|default('medium') }}">
+                        {% if data.severity == 'high' %}Высокий риск
+                        {% elif data.severity == 'low' %}Низкий риск
+                        {% else %}Средний риск{% endif %}
+                    </span>
+                </div>
+                
+                <h3 class="disease-name">{{ name }}</h3>
+                <p class="disease-description">{{ data.description }}</p>
+                
+                <div class="disease-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Распространенность: {{ data.prevalence|default('Средняя') }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-user-md"></i>
+                        <span>Лечится у: {{ data.specialist|default('Терапевт') }}</span>
+                    </div>
+                </div>
+                
+                <div class="disease-symptoms">
+                    <h4><i class="fas fa-exclamation-circle"></i> Основные симптомы:</h4>
+                    <div class="symptoms-list">
+                        {% for symptom in data.symptoms[:3] %}
+                        <span class="symptom-tag">{{ symptom }}</span>
+                        {% endfor %}
+                        {% if data.symptoms|length > 3 %}
+                        <span class="symptom-tag more">+{{ data.symptoms|length - 3 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="disease-actions">
+                    <button class="btn btn-small" onclick="viewDiseaseDetails('{{ name }}')">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                    <button class="btn btn-small btn-outline" onclick="analyzeThisDisease('{{ name }}')">
+                        <i class="fas fa-search"></i> Анализировать
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Пример дополнительных заболеваний -->
+            <div class="disease-card" data-category="skin" data-severity="medium">
+                <div class="disease-card-header">
+                    <div class="disease-category skin">
+                        <i class="fas fa-skin"></i> Кожа
+                    </div>
+                    <span class="disease-severity medium">Средний риск</span>
+                </div>
+                <h3 class="disease-name">Экзема</h3>
+                <p class="disease-description">Воспалительное заболевание кожи, сопровождающееся зудом и покраснением.</p>
+                <div class="disease-symptoms">
+                    <h4><i class="fas fa-exclamation-circle"></i> Основные симптомы:</h4>
+                    <div class="symptoms-list">
+                        <span class="symptom-tag">Зуд</span>
+                        <span class="symptom-tag">Покраснение</span>
+                        <span class="symptom-tag">Шелушение</span>
+                    </div>
+                </div>
+                <div class="disease-actions">
+                    <button class="btn btn-small" onclick="viewDiseaseDetails('Экзема')">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+            
+            <div class="disease-card" data-category="lungs" data-severity="high">
+                <div class="disease-card-header">
+                    <div class="disease-category lungs">
+                        <i class="fas fa-lungs"></i> Легкие
+                    </div>
+                    <span class="disease-severity high">Высокий риск</span>
+                </div>
+                <h3 class="disease-name">Туберкулез</h3>
+                <p class="disease-description">Инфекционное заболевание легких, вызываемое микобактериями.</p>
+                <div class="disease-symptoms">
+                    <h4><i class="fas fa-exclamation-circle"></i> Основные симптомы:</h4>
+                    <div class="symptoms-list">
+                        <span class="symptom-tag">Кашель</span>
+                        <span class="symptom-tag">Кровохарканье</span>
+                        <span class="symptom-tag">Потеря веса</span>
+                    </div>
+                </div>
+                <div class="disease-actions">
+                    <button class="btn btn-small" onclick="viewDiseaseDetails('Туберкулез')">
+                        <i class="fas fa-info-circle"></i> Подробнее
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пустое состояние -->
+        <div id="noResults" class="no-results" style="display: none;">
+            <div class="no-results-content">
+                <i class="fas fa-search"></i>
+                <h3>Заболевания не найдены</h3>
+                <p>Попробуйте изменить параметры поиска или сбросить фильтры</p>
+                <button class="btn btn-primary" onclick="resetFilters()">
+                    <i class="fas fa-redo"></i> Сбросить все фильтры
+                </button>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <div class="pagination" id="pagination">
+            <button class="page-btn" onclick="previousPage()">
+                <i class="fas fa-chevron-left"></i> Назад
+            </button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button class="page-btn" onclick="nextPage()">
+                Вперед <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Информационный блок -->
+        <div class="info-section">
+            <div class="info-card">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Как пользоваться библиотекой?</h3>
+                <p>Используйте поиск и фильтры для быстрого нахождения нужного заболевания. 
+                Нажмите "Подробнее" для получения полной информации о симптомах, лечении и профилактике.</p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Важное предупреждение</h3>
+                <p>Информация в библиотеке носит справочный характер. Для постановки диагноза и 
+                назначения лечения обратитесь к врачу.</p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-sync-alt"></i>
+                <h3>Регулярные обновления</h3>
+                <p>Библиотека постоянно пополняется новыми заболеваниями и обновляется 
+                в соответствии с последними медицинскими исследованиями.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно с деталями заболевания -->
+<div id="diseaseModal" class="modal" style="display: none;">
+    <div class="modal-content disease-modal-content">
+        <div class="modal-header">
+            <h2 id="modalDiseaseName"></h2>
+            <button class="modal-close" onclick="closeDiseaseModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="diseaseDetails"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Данные заболеваний
+const diseasesData = {
+    "Акне": {
+        category: "Кожа",
+        description: "Воспалительное заболевание сальных желез",
+        symptoms: ["Прыщи", "Угри", "Красные пятна", "Воспаления", "Болезненность"],
+        causes: ["Гормональные изменения", "Наследственность", "Стресс", "Неправильное питание"],
+        treatment: "Лечение у дерматолога, местные средства, антибиотики",
+        prevention: "Правильный уход за кожей, здоровое питание",
+        specialist: "Дерматолог",
+        prevalence: "Высокая",
+        severity: "low",
+        images: ["acne1.jpg", "acne2.jpg"]
+    },
+    "Меланома": {
+        category: "Кожа",
+        description: "Опасный вид рака кожи",
+        symptoms: ["Изменение родинки", "Неровные края", "Быстрый рост", "Кровоточивость", "Зуд"],
+        causes: ["УФ-излучение", "Генетика", "Травмы родинок"],
+        treatment: "Хирургическое удаление, иммунотерапия",
+        prevention: "Защита от солнца, регулярный осмотр родинок",
+        specialist: "Онколог",
+        prevalence: "Средняя",
+        severity: "high",
+        urgent: true
+    },
+    "Пневмония": {
+        category: "Легкие",
+        description: "Воспаление легочной ткани",
+        symptoms: ["Кашель", "Температура", "Одышка", "Боль в груди", "Слабость"],
+        causes: ["Бактерии", "Вирусы", "Грибки"],
+        treatment: "Антибиотики, госпитализация, покой",
+        prevention: "Вакцинация, здоровый образ жизни",
+        specialist: "Пульмонолог",
+        prevalence: "Высокая",
+        severity: "high",
+        season: "winter"
+    },
+    "Конъюнктивит": {
+        category: "Глаза",
+        description: "Воспаление слизистой оболочки глаза",
+        symptoms: ["Покраснение", "Зуд", "Слезотечение", "Выделения"],
+        causes: ["Инфекции", "Аллергия", "Раздражители"],
+        treatment: "Капли, антибиотики, антигистаминные",
+        specialist: "Офтальмолог",
+        prevalence: "Высокая",
+        severity: "low"
+    },
+    "Грибок ногтей": {
+        category: "Ногти",
+        description: "Грибковая инфекция ногтевой пластины",
+        symptoms: ["Изменение цвета", "Утолщение", "Расслоение", "Зуд"],
+        causes: ["Грибковая инфекция", "Травмы", "Снижение иммунитета"],
+        treatment: "Противогрибковые средства",
+        specialist: "Дерматолог",
+        prevalence: "Средняя",
+        severity: "low"
+    }
+};
+
+// Переменные для фильтрации
+let currentFilter = 'all';
+let currentSearch = '';
+let currentPage = 1;
+const itemsPerPage = 9;
+
+function searchDiseases() {
+    currentSearch = document.getElementById('searchInput').value.toLowerCase();
+    currentPage = 1;
+    applyFilters();
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    currentSearch = '';
+    applyFilters();
+}
+
+function filterByCategory(category) {
+    currentFilter = category;
+    
+    // Обновляем активные кнопки фильтров
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    
+    currentPage = 1;
+    applyFilters();
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector('[data-category="all"]').classList.add('active');
+    
+    document.getElementById('filterLow').checked = true;
+    document.getElementById('filterMedium').checked = true;
+    document.getElementById('filterHigh').checked = true;
+    document.getElementById('ageGroup').value = 'all';
+    document.getElementById('seasonality').value = 'all';
+    
+    currentFilter = 'all';
+    currentSearch = '';
+    currentPage = 1;
+    applyFilters();
+}
+
+function applyFilters() {
+    const diseaseCards = document.querySelectorAll('.disease-card');
+    const lowSeverity = document.getElementById('filterLow').checked;
+    const mediumSeverity = document.getElementById('filterMedium').checked;
+    const highSeverity = document.getElementById('filterHigh').checked;
+    const ageGroup = document.getElementById('ageGroup').value;
+    const season = document.getElementById('seasonality').value;
+    
+    let visibleCount = 0;
+    
+    diseaseCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const severity = card.getAttribute('data-severity');
+        const name = card.querySelector('.disease-name').textContent.toLowerCase();
+        const description = card.querySelector('.disease-description').textContent.toLowerCase();
+        
+        // Проверка фильтра по категории
+        const categoryMatch = currentFilter === 'all' || 
+                            (currentFilter === 'common' && card.hasAttribute('data-common')) ||
+                            (currentFilter === 'urgent' && card.hasAttribute('data-urgent')) ||
+                            category === currentFilter.toLowerCase();
+        
+        // Проверка поиска
+        const searchMatch = !currentSearch || 
+                          name.includes(currentSearch) || 
+                          description.includes(currentSearch);
+        
+        // Проверка серьезности
+        const severityMatch = (severity === 'low' && lowSeverity) ||
+                            (severity === 'medium' && mediumSeverity) ||
+                            (severity === 'high' && highSeverity);
+        
+        if (categoryMatch && searchMatch && severityMatch) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Обновляем счетчик
+    document.getElementById('diseaseCount').textContent = visibleCount + ' заболеваний';
+    
+    // Показываем/скрываем сообщение "не найдено"
+    const noResults = document.getElementById('noResults');
+    if (visibleCount === 0) {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
+    
+    updatePagination(visibleCount);
+}
+
+function updatePagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const pageNumbers = document.getElementById('pageNumbers');
+    const diseaseCards = document.querySelectorAll('.disease-card[style="display: block;"]');
+    
+    // Очищаем номера страниц
+    pageNumbers.innerHTML = '';
+    
+    // Добавляем номера страниц
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.onclick = () => goToPage(i);
+        pageNumbers.appendChild(pageBtn);
+    }
+    
+    // Показываем/скрываем элементы на текущей странице
+    diseaseCards.forEach((card, index) => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        
+        if (index >= startIndex && index < endIndex) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function goToPage(page) {
+    currentPage = page;
+    applyFilters();
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        applyFilters();
+    }
+}
+
+function nextPage() {
+    const totalItems = document.querySelectorAll('.disease-card[style="display: block;"]').length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    if (currentPage < totalPages) {
+        currentPage++;
+        applyFilters();
+    }
+}
+
+function viewDiseaseDetails(diseaseName) {
+    const disease = diseasesData[diseaseName];
+    
+    if (!disease) {
+        showNotification('Информация о заболевании не найдена', 'error');
+        return;
+    }
+    
+    document.getElementById('modalDiseaseName').textContent = diseaseName;
+    
+    let detailsHTML = `
+        <div class="disease-details-content">
+            <div class="disease-header-info">
+                <div class="disease-category-badge ${disease.category.toLowerCase()}">
+                    <i class="fas 
+                        ${disease.category === 'Кожа' ? 'fa-skin' :
+                          disease.category === 'Глаза' ? 'fa-eye' :
+                          disease.category === 'Ногти' ? 'fa-hand-paper' :
+                          disease.category === 'Легкие' ? 'fa-lungs' :
+                          disease.category === 'Сердце' ? 'fa-heart' : 'fa-bone'}"></i>
+                    ${disease.category}
+                </div>
+                <div class="disease-severity-badge ${disease.severity}">
+                    ${disease.severity === 'high' ? 'Высокий риск' :
+                      disease.severity === 'low' ? 'Низкий риск' : 'Средний риск'}
+                </div>
+            </div>
+            
+            <div class="disease-description-full">
+                <h3><i class="fas fa-info-circle"></i> Описание</h3>
+                <p>${disease.description}</p>
+            </div>
+            
+            <div class="disease-symptoms-full">
+                <h3><i class="fas fa-exclamation-circle"></i> Симптомы</h3>
+                <div class="symptoms-grid">
+                    ${disease.symptoms.map(symptom => `
+                        <div class="symptom-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>${symptom}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <div class="disease-causes">
+                <h3><i class="fas fa-question-circle"></i> Причины</h3>
+                <ul>
+                    ${disease.causes ? disease.causes.map(cause => `<li>${cause}</li>`).join('') : '<li>Информация отсутствует</li>'}
+                </ul>
+            </div>
+            
+            <div class="disease-treatment">
+                <h3><i class="fas fa-stethoscope"></i> Лечение</h3>
+                <p>${disease.treatment || 'Лечение назначается врачом после обследования'}</p>
+            </div>
+            
+            ${disease.prevention ? `
+            <div class="disease-prevention">
+                <h3><i class="fas fa-shield-alt"></i> Профилактика</h3>
+                <p>${disease.prevention}</p>
+            </div>
+            ` : ''}
+            
+            <div class="disease-specialist">
+                <h3><i class="fas fa-user-md"></i> К какому врачу обращаться</h3>
+                <div class="specialist-card">
+                    <i class="fas fa-user-md"></i>
+                    <div>
+                        <h4>${disease.specialist || 'Терапевт'}</h4>
+                        <p>Специалист по лечению данного заболевания</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${disease.urgent ? `
+            <div class="urgent-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <h4>Срочное обращение к врачу!</h4>
+                    <p>При обнаружении симптомов необходимо немедленно обратиться к врачу</p>
+                </div>
+            </div>
+            ` : ''}
+            
+            <div class="disease-actions-modal">
+                <button class="btn btn-primary" onclick="analyzeThisDisease('${diseaseName}')">
+                    <i class="fas fa-search"></i> Проанализировать это заболевание
+                </button>
+                <button class="btn btn-secondary" onclick="saveDiseaseInfo('${diseaseName}')">
+                    <i class="fas fa-save"></i> Сохранить информацию
+                </button>
+                <button class="btn btn-outline" onclick="printDiseaseInfo()">
+                    <i class="fas fa-print"></i> Распечатать
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('diseaseDetails').innerHTML = detailsHTML;
+    document.getElementById('diseaseModal').style.display = 'flex';
+}
+
+function closeDiseaseModal() {
+    document.getElementById('diseaseModal').style.display = 'none';
+}
+
+function analyzeThisDisease(diseaseName) {
+    showNotification(`Переход к анализу заболевания: ${diseaseName}`, 'info');
+    // Здесь можно добавить переход на страницу анализа
+    window.location.href = '/scanner?disease=' + encodeURIComponent(diseaseName);
+}
+
+function saveDiseaseInfo(diseaseName) {
+    showNotification(`Информация о "${diseaseName}" сохранена в истории`, 'success');
+}
+
+function printDiseaseInfo() {
+    window.print();
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    applyFilters();
+    
+    // Добавляем обработчик для поиска при нажатии Enter
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchDiseases();
+        }
+    });
+    
+    // Добавляем обработчики для дополнительных фильтров
+    document.querySelectorAll('#filterLow, #filterMedium, #filterHigh, #ageGroup, #seasonality').forEach(element => {
+        element.addEventListener('change', applyFilters);
+    });
+});
+</script>
+
+<style>
+/* Стили для библиотеки заболеваний */
+.library-page {
+    padding: 2rem 0;
+}
+
+.library-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.search-section {
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.search-box {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-box i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 50px;
+    border: 2px solid var(--gray-light);
+    border-radius: 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-clear {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+}
+
+.search-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.divider {
+    opacity: 0.5;
+}
+
+.filters-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 1rem;
+    border: 2px solid var(--gray-light);
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.filter-btn:hover:not(.active) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.advanced-filters {
+    margin-top: 1.5rem;
+}
+
+.advanced-filters details {
+    border: 1px solid var(--gray-light);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.advanced-filters summary {
+    list-style: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.advanced-filters summary::-webkit-details-marker {
+    display: none;
+}
+
+.advanced-filters summary::after {
+    content: '▼';
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.advanced-filters[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.advanced-filters-content {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-light);
+}
+
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.severity {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+.severity.low {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.severity.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.severity.high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.filter-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--gray-light);
+    border-radius: 10px;
+    background: white;
+}
+
+.diseases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.disease-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.disease-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-light);
+}
+
+.disease-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.disease-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.disease-category.skin {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.disease-category.eyes {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.disease-category.nails {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.disease-category.lungs {
+    background: #f0f9ff;
+    color: #075985;
+}
+
+.disease-category.heart {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.disease-category.bones {
+    background: #fef7cd;
+    color: #854d0e;
+}
+
+.disease-severity {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+}
+
+.disease-severity.high {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.disease-severity.medium {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.disease-severity.low {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.disease-name {
+    font-size: 1.25rem;
+    margin: 0.5rem 0;
+    color: var(--dark);
+}
+
+.disease-description {
+    color: var(--gray);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.disease-stats {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.disease-symptoms h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.symptoms-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.symptom-tag {
+    padding: 0.25rem 0.75rem;
+    background: var(--light);
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.symptom-tag.more {
+    background: var(--primary);
+    color: white;
+}
+
+.disease-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    margin: 2rem 0;
+}
+
+.no-results i {
+    font-size: 4rem;
+    color: var(--gray-light);
+    margin-bottom: 1rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+}
+
+.page-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--gray-light);
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.page-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.page-numbers {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.page-number {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--gray-light);
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.page-number.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.page-number:hover:not(.active) {
+    border-color: var(--primary);
+}
+
+.info-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.info-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.info-card i {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.info-card h3 {
+    margin-bottom: 1rem;
+}
+
+.info-card p {
+    color: var(--gray);
+    line-height: 1.5;
+}
+
+/* Стили для модального окна заболевания */
+.disease-modal-content {
+    max-width: 800px;
+    width: 95%;
+    max-height: 90vh;
+}
+
+.disease-details-content {
+    padding: 1rem;
+}
+
+.disease-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--gray-light);
+}
+
+.disease-category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.disease-category-badge.skin {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.disease-severity-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.disease-severity-badge.high {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.disease-severity-badge.medium {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.disease-severity-badge.low {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.disease-description-full h3,
+.disease-symptoms-full h3,
+.disease-causes h3,
+.disease-treatment h3,
+.disease-prevention h3,
+.disease-specialist h3 {
+    margin: 1.5rem 0 1rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.symptoms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.symptom-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.5rem;
+    background: var(--light);
+    border-radius: 10px;
+}
+
+.symptom-item i {
+    color: var(--secondary);
+}
+
+.disease-causes ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.disease-causes li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.disease-causes li:before {
+    content: '•';
+    color: var(--primary);
+    position: absolute;
+    left: 0;
+}
+
+.specialist-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--light);
+    border-radius: 10px;
+    margin-top: 1rem;
+}
+
+.specialist-card i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.urgent-warning {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #ff6b6b11 0%, #ee5a5211 100%);
+    border: 2px solid #ff6b6b;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+.urgent-warning i {
+    font-size: 2rem;
+    color: #ff6b6b;
+}
+
+.disease-actions-modal {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--gray-light);
+    flex-wrap: wrap;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .diseases-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .disease-actions-modal {
+        flex-direction: column;
+    }
+    
+    .disease-actions-modal .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

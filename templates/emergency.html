@@ -1,0 +1,82 @@
+<div class="card">
+    <div class="card-header">
+        <h2 style="color: var(--danger-color);">
+            <i class="fas fa-ambulance"></i> Экстренная помощь
+        </h2>
+    </div>
+    
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i>
+        <div>
+            <h3>Немедленно вызовите скорую помощь (112 или 103) если:</h3>
+            <ul style="margin-top: 1rem;">
+                <li>Сильная боль в груди, отдающая в руку или челюсть</li>
+                <li>Затрудненное дыхание или удушье</li>
+                <li>Сильное кровотечение</li>
+                <li>Потеря сознания</li>
+                <li>Признаки инсульта (асимметрия лица, нарушение речи)</li>
+                <li>Температура выше 40°C</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="grid grid-2">
+        <div class="card">
+            <h3><i class="fas fa-phone"></i> Телефоны экстренных служб</h3>
+            <div style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid #e2e8f0;">
+                    <span>Скорая помощь</span>
+                    <span style="font-weight: bold; color: var(--danger-color);">103 или 112</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid #e2e8f0;">
+                    <span>Пожарная служба</span>
+                    <span style="font-weight: bold; color: var(--danger-color);">101</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid #e2e8f0;">
+                    <span>Полиция</span>
+                    <span style="font-weight: bold; color: var(--danger-color);">102</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.8rem 0;">
+                    <span>Газовая служба</span>
+                    <span style="font-weight: bold; color: var(--danger-color);">104</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-hospital"></i> Ближайшие больницы</h3>
+            {% if city %}
+                {% for hospital in get_hospitals_by_specialty(city, 'Травматолог') %}
+                <div style="padding: 1rem; background: var(--bg-light); border-radius: 10px; margin-top: 1rem;">
+                    <h4>{{ hospital.name }}</h4>
+                    <p>{{ hospital.address }}</p>
+                    <p><i class="fas fa-phone"></i> {{ hospital.phone }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-light); text-align: center; padding: 2rem;">
+                    <i class="fas fa-map-marker-alt"></i><br>
+                    Укажите город в настройках профиля
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card" style="margin-top: 2rem;">
+        <h3><i class="fas fa-first-aid"></i> Первая помощь</h3>
+        <div class="grid grid-3">
+            <div>
+                <h4><i class="fas fa-heart"></i> Остановка сердца</h4>
+                <p>Немедленно начать сердечно-легочную реанимацию (30 нажатий : 2 вдоха)</p>
+            </div>
+            <div>
+                <h4><i class="fas fa-tint"></i> Кровотечение</h4>
+                <p>Наложить давящую повязку, приподнять конечность выше сердца</p>
+            </div>
+            <div>
+                <h4><i class="fas fa-fire"></i> Ожоги</h4>
+                <p>Охладить проточной водой 15-20 минут, накрыть стерильной повязкой</p>
+            </div>
+        </div>
+    </div>
+</div>

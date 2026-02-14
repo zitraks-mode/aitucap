@@ -1,0 +1,10 @@
+Carcinoma
+Dermatitis
+Eczema
+Fungi
+Keratoses
+Keratosis
+Melanoma
+Nevi
+Psoriasis
+Warts

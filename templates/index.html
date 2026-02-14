@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health AI Scanner - Система анализа здоровья</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="header">
+        <div class="container">
+            <div class="logo" onclick="showPage('home')">
+                <i class="fas fa-brain"></i>
+                <span>HealthAI Scanner</span>
+            </div>
+            <nav class="nav">
+                <button class="nav-link" onclick="showPage('home')">
+                    <i class="fas fa-home"></i> Главная
+                </button>
+                <button class="nav-link" onclick="showPage('scanner')">
+                    <i class="fas fa-camera"></i> Сканер
+                </button>
+                <button class="nav-link" onclick="showPage('xray')">
+                    <i class="fas fa-x-ray"></i> Рентген
+                </button>
+                <button class="nav-link" onclick="showPage('library')">
+                    <i class="fas fa-book-medical"></i> Библиотека
+                </button>
+                <button class="nav-link" onclick="showPage('chat')">
+                    <i class="fas fa-robot"></i> ИИ Чат
+                </button>
+                <button class="nav-link" onclick="showPage('history')">
+                    <i class="fas fa-history"></i> История
+                </button>
+            </nav>
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Главный контент -->
+    <main class="main-content">
+        <!-- Главная страница -->
+        <div id="home-page" class="page active">
+            <div class="container">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h1 class="hero-title">
+                            <span class="gradient-text">ИИ-анализ</span> вашего здоровья<br>
+                            по визуальным данным
+                        </h1>
+                        <p class="hero-subtitle">
+                            Этот сайт использует искусственный интеллект для анализа изображений кожи, 
+                            ногтей, глаз и рентгеновских снимков с целью выявления возможных заболеваний.
+                        </p>
+                        <div class="hero-buttons">
+                            <button class="btn btn-primary" onclick="showPage('scanner')">
+                                <i class="fas fa-camera"></i> Начать сканирование
+                            </button>
+                            <button class="btn btn-secondary" onclick="showPage('xray')">
+                                <i class="fas fa-x-ray"></i> Рентген-анализ
+                            </button>
+                            <button class="btn btn-outline" onclick="showPage('library')">
+                                <i class="fas fa-book-medical"></i> Библиотека заболеваний
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="floating-icons">
+                            <div class="floating-icon">
+                                <i class="fas fa-face-smile"></i>
+                                <span>Кожа</span>
+                            </div>
+                            <div class="floating-icon">
+                                <i class="fas fa-eye"></i>
+                                <span>Глаза</span>
+                            </div>
+                            <div class="floating-icon">
+                                <i class="fas fa-hand-sparkles"></i>
+                                <span>Ногти</span>
+                            </div>
+                            <div class="floating-icon">
+                                <i class="fas fa-lungs"></i>
+                                <span>Рентген</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="how-it-works">
+                    <h2 class="section-title">Как это работает</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <i class="fas fa-upload step-icon"></i>
+                            <h3>Загрузите изображение</h3>
+                            <p>Сделайте фото или загрузите существующее изображение кожи, ногтей, глаз или рентген-снимок</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <i class="fas fa-brain step-icon"></i>
+                            <h3>ИИ анализирует</h3>
+                            <p>Нейросеть обрабатывает изображение и сравнивает с базой медицинских данных</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <i class="fas fa-clipboard-list step-icon"></i>
+                            <h3>Получите результат</h3>
+                            <p>Полный отчет с возможными диагнозами, вероятностью и описанием</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <i class="fas fa-file-pdf step-icon"></i>
+                            <h3>PDF отчет</h3>
+                            <p>Скачайте детальный отчет для показа врачу</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">5</div>
+                            <i class="fas fa-hospital step-icon"></i>
+                            <h3>Найдите врача</h3>
+                            <p>Рекомендации клиник и больниц в вашем городе</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Страница сканера -->
+        <div id="scanner-page" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-camera"></i> Анализ изображений
+                    </h1>
+                    <p class="page-subtitle">
+                        Загрузите фото кожи, ногтей или глаз для анализа
+                    </p>
+                </div>
+
+                <div class="scanner-container">
+                    <div class="analysis-type-selector">
+                        <div class="type-option active" data-type="skin">
+                            <i class="fas fa-face-smile"></i>
+                            <span>Кожа</span>
+                        </div>
+                        <div class="type-option" data-type="nails">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Ногти</span>
+                        </div>
+                        <div class="type-option" data-type="eyes">
+                            <i class="fas fa-eye"></i>
+                            <span>Глаза</span>
+                        </div>
+                    </div>
+
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Перетащите изображение сюда</h3>
+                            <p>или</p>
+                            <div class="upload-buttons">
+                                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open"></i> Выбрать файл
+                                </button>
+                                <button class="btn btn-secondary" onclick="capturePhoto()">
+                                    <i class="fas fa-camera"></i> Сделать фото
+                                </button>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden 
+                                   onchange="handleImageUpload(event)">
+                        </div>
+                    </div>
+
+                    <div id="previewContainer" class="preview-container" style="display: none;">
+                        <div class="preview-header">
+                            <h3>Предпросмотр</h3>
+                            <button class="btn btn-small" onclick="clearPreview()">
+                                <i class="fas fa-times"></i> Удалить
+                            </button>
+                        </div>
+                        <div class="preview-content">
+                            <img id="previewImage" src="" alt="Превью">
+                            <div class="scan-animation"></div>
+                        </div>
+                        <button class="btn btn-primary btn-large" onclick="analyzeImage()">
+                            <i class="fas fa-play"></i> Запустить анализ
+                        </button>
+                    </div>
+
+                    <div id="resultsContainer" class="results-container" style="display: none;">
+                        <div class="results-header">
+                            <h2><i class="fas fa-clipboard-check"></i> Результаты анализа</h2>
+                            <div class="result-meta">
+                                <span id="analysisDate"></span>
+                                <span id="analysisType"></span>
+                            </div>
+                        </div>
+
+                        <div class="diseases-list" id="diseasesList">
+                            <!-- Результаты будут здесь -->
+                        </div>
+
+                        <div class="recommendations">
+                            <h3><i class="fas fa-stethoscope"></i> Рекомендации</h3>
+                            <div class="recommendations-content">
+                                <p id="recommendationsText"></p>
+                            </div>
+                        </div>
+
+                        <div class="actions-section">
+                            <button class="btn btn-primary" onclick="generatePDF()">
+                                <i class="fas fa-file-pdf"></i> Скачать PDF отчет
+                            </button>
+                            <button class="btn btn-secondary" onclick="findHospitals()">
+                                <i class="fas fa-hospital"></i> Найти больницы
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="hospitalsSection" class="hospitals-section" style="display: none;">
+                        <h3><i class="fas fa-map-marker-alt"></i> Больницы в вашем городе</h3>
+                        <div class="city-selector">
+                            <select id="citySelect" onchange="loadHospitals()">
+                                <option value="">Выберите город</option>
+                                <option value="Москва">Москва</option>
+                                <option value="Санкт-Петербург">Санкт-Петербург</option>
+                                <option value="Новосибирск">Новосибирск</option>
+                            </select>
+                        </div>
+                        <div class="hospitals-list" id="hospitalsList">
+                            <!-- Список больниц будет здесь -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Рентген-анализ -->
+        <div id="xray-page" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-x-ray"></i> Рентген-анализ
+                    </h1>
+                    <p class="page-subtitle">
+                        Загрузите рентгеновский снимок для автоматического анализа
+                    </p>
+                </div>
+
+                <div class="xray-info">
+                    <h3><i class="fas fa-info-circle"></i> Поддерживаемые заболевания:</h3>
+                    <div class="diseases-tags">
+                        <span class="disease-tag">Пневмония</span>
+                        <span class="disease-tag">Туберкулез</span>
+                        <span class="disease-tag">Переломы</span>
+                        <span class="disease-tag">Кардиомегалия</span>
+                        <span class="disease-tag">Ателектаз</span>
+                        <span class="disease-tag">Гидроторакс</span>
+                        <span class="disease-tag">Сколиоз</span>
+                    </div>
+                </div>
+
+                <div class="upload-area xray-upload">
+                    <div class="upload-content">
+                        <i class="fas fa-x-ray"></i>
+                        <h3>Загрузите рентгеновский снимок</h3>
+                        <p>Поддерживаются форматы: JPG, PNG</p>
+                        <div class="upload-buttons">
+                            <button class="btn btn-primary" onclick="document.getElementById('xrayFileInput').click()">
+                                <i class="fas fa-folder-open"></i> Выбрать файл
+                            </button>
+                        </div>
+                        <input type="file" id="xrayFileInput" accept="image/*" hidden 
+                               onchange="handleXrayUpload(event)">
+                    </div>
+                </div>
+
+                <div id="xrayResults" class="results-container" style="display: none;">
+                    <!-- Результаты рентгена будут здесь -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Библиотека заболеваний -->
+        <div id="library-page" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-book-medical"></i> Библиотека заболеваний
+                    </h1>
+                    <p class="page-subtitle">
+                        База медицинских знаний с описанием заболеваний, симптомов и методов лечения
+                    </p>
+                </div>
+
+                <div class="library-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="diseaseSearch" placeholder="Поиск по названию заболевания..." 
+                               onkeyup="searchDiseases()">
+                    </div>
+                    
+                    <div class="category-filters">
+                        <button class="filter-btn active" onclick="filterDiseases('all')">Все</button>
+                        <button class="filter-btn" onclick="filterDiseases('skin')">Кожа</button>
+                        <button class="filter-btn" onclick="filterDiseases('eyes')">Глаза</button>
+                        <button class="filter-btn" onclick="filterDiseases('nails')">Ногти</button>
+                        <button class="filter-btn" onclick="filterDiseases('lungs')">Легкие</button>
+                        <button class="filter-btn" onclick="filterDiseases('heart')">Сердце</button>
+                        <button class="filter-btn" onclick="filterDiseases('bones')">Кости</button>
+                    </div>
+                </div>
+
+                <div class="diseases-grid" id="diseasesGrid">
+                    <!-- Заболевания будут загружены через JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ИИ Чат -->
+        <div id="chat-page" class="page">
+            <div class="container">
+                <div class="chat-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-robot"></i> ИИ Медицинский Ассистент
+                    </h1>
+                    <p class="page-subtitle">
+                        Задавайте вопросы о заболеваниях, симптомах и лечении
+                    </p>
+                    <div class="chat-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>ИИ-ассистент не заменяет врача. Консультируйтесь со специалистом для постановки диагноза.</p>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="sender">Медицинский ИИ-ассистент</span>
+                                </div>
+                                <div class="message-text">
+                                    <p>Здравствуйте! Я медицинский ИИ-ассистент. Я могу помочь вам с:</p>
+                                    <ul>
+                                        <li>Объяснением симптомов заболеваний</li>
+                                        <li>Информацией о методах диагностики</li>
+                                        <li>Общими рекомендациями</li>
+                                        <li>Объяснением медицинских терминов</li>
+                                    </ul>
+                                    <p><strong>Важно:</strong> Я не ставлю диагнозы. Для точной диагностики обратитесь к врачу.</p>
+                                    <p>Чем могу помочь?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input">
+                        <div class="input-wrapper">
+                            <textarea id="chatInput" 
+                                      placeholder="Напишите ваш вопрос... Нажмите Enter для отправки, Shift+Enter для новой строки"
+                                      onkeydown="handleChatKeydown(event)"></textarea>
+                            <div class="input-actions">
+                                <button class="btn btn-primary" onclick="sendChatMessage()">
+                                    <i class="fas fa-paper-plane"></i> Отправить
+                                </button>
+                            </div>
+                        </div>
+                        <div class="quick-questions">
+                            <span>Быстрые вопросы:</span>
+                            <button class="quick-question" onclick="askQuickQuestion('Что делать при температуре?')">
+                                Температура
+                            </button>
+                            <button class="quick-question" onclick="askQuickQuestion('Симптомы гриппа?')">
+                                Грипп
+                            </button>
+                            <button class="quick-question" onclick="askQuickQuestion('Когда обращаться к врачу?')">
+                                К врачу
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- История анализов -->
+        <div id="history-page" class="page">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="section-title">
+                        <i class="fas fa-history"></i> История анализов
+                    </h1>
+                    <p class="page-subtitle">
+                        Все ваши предыдущие анализы и результаты
+                    </p>
+                </div>
+
+                <div class="history-controls">
+                    <button class="btn btn-primary" onclick="loadHistory()">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                    <button class="btn btn-outline" onclick="clearHistory()">
+                        <i class="fas fa-trash"></i> Очистить историю
+                    </button>
+                </div>
+
+                <div class="history-list" id="historyList">
+                    <!-- История будет загружена через JavaScript -->
+                    <div class="empty-history">
+                        <i class="fas fa-history"></i>
+                        <h3>История анализов пуста</h3>
+                        <p>Выполните анализ, чтобы увидеть результаты здесь</p>
+                        <button class="btn btn-primary" onclick="showPage('scanner')">
+                            <i class="fas fa-camera"></i> Выполнить анализ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Дисклеймер</h4>
+                    <p class="disclaimer">
+                        Результаты ИИ-анализа носят информационный характер и не являются медицинским диагнозом. 
+                        Для точной диагностики обратитесь к врачу.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-link"></i>Работа сделана для AITUCAP Hackathon</h4>
+                    <h6 class="disclaimer">Команда: INSPIRO</h6>
+                    <h6 class="disclaimer">Участники:</h6>
+                    <h6 class="disclaimer">Сейфуллина Ясмин</h6>
+                    <h6 class="disclaimer">Сейфуллина Айлин</h6>
+                    <h6 class="disclaimer">Жанат Нуртас</h6>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>INSPIRO</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    <div id="diseaseModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalDiseaseName"></h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalDiseaseContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Камера для съемки фото -->
+    <div id="cameraModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Сделать фото</h3>
+                <button class="modal-close" onclick="closeCamera()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <video id="cameraVideo" autoplay></video>
+                <div class="camera-controls">
+                    <button class="btn btn-primary" onclick="takePhoto()">
+                        <i class="fas fa-camera"></i> Сделать снимок
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeCamera()">
+                        <i class="fas fa-times"></i> Отмена
+                    </button>
+                </div>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="static\js\main.js"></script>
+</body>
+</html>

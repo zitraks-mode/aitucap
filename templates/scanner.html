@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Health AI Scanner - Анализ{% endblock %}
+
+{% block content %}
+<div class="scanner-page">
+    <div class="container">
+        <h1 class="section-title">Анализ изображений</h1>
+        
+        <!-- Выбор типа анализа -->
+        <div class="analysis-types">
+            <button class="type-btn active" data-type="skin">
+                <i class="fas fa-face-smile"></i> Кожа
+            </button>
+            <button class="type-btn" data-type="eyes">
+                <i class="fas fa-eye"></i> Глаза
+            </button>
+            <button class="type-btn" data-type="nails">
+                <i class="fas fa-hand-paper"></i> Ногти
+            </button>
+        </div>
+        
+        <!-- Область загрузки -->
+        <div class="upload-area" id="uploadArea">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3>Перетащите изображение сюда</h3>
+            <p>или</p>
+            <div class="upload-buttons">
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Выбрать файл
+                </button>
+                <button class="btn btn-secondary" onclick="captureFromCamera()">
+                    <i class="fas fa-camera"></i> Сделать фото
+                </button>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" hidden 
+                   onchange="handleFiles(this.files)">
+        </div>
+        
+        <!-- Превью -->
+        <div id="preview" class="preview-container"></div>
+        
+        <!-- Результаты -->
+        <div id="results"></div>
+    </div>
+</div>
+
+<script>
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация Drag & Drop
+    initializeDragDrop();
+    
+    // Обработчики для кнопок типа анализа
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}
